@@ -1,0 +1,63 @@
+{
+  "name": "@persistent-dataloader/dynamodb-storage",
+  "description": "Persistent DataLoader DynamoDB storage",
+  "version": "0.0.0-development",
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "npm run build-clean && tsc",
+    "build-clean": "rm -rf ./dist/",
+    "lint": "eslint . --ext .ts --ignore-path .gitignore",
+    "pretest": "npm run lint",
+    "test": "jest --passWithNoTests",
+    "coverage": "npm run test -- --coverage && cat ./coverage/lcov.info | coveralls",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/persistent-dataloader/dynamodb-storage.git"
+  },
+  "keywords": [
+    "dataloader",
+    "persistent",
+    "facebook",
+    "graphql",
+    "dynamodb",
+    "aws",
+    "amazon",
+    "storage"
+  ],
+  "author": "Victor Korzunin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/persistent-dataloader/dynamodb-storage/issues"
+  },
+  "homepage": "https://floydspace.github.io",
+  "devDependencies": {
+    "@commitlint/cli": "^9.1.2",
+    "@commitlint/config-conventional": "^9.1.2",
+    "@types/bluebird": "^3.5.32",
+    "@types/jest": "^25.2.3",
+    "@types/node": "^14.0.0",
+    "@types/ramda": "^0.27.14",
+    "@typescript-eslint/eslint-plugin": "^3.9.0",
+    "@typescript-eslint/parser": "^3.9.0",
+    "coveralls": "^3.1.0",
+    "eslint": "^6.8.0",
+    "husky": "^4.2.5",
+    "jest": "^25.5.4",
+    "semantic-release": "^17.1.1",
+    "ts-jest": "^25.5.1",
+    "typescript": "^3.9.7"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.734.0",
+    "bluebird": "^3.7.2",
+    "persistent-dataloader": "^1.0.0-alpha.1",
+    "ramda": "^0.27.1"
+  }
+}
