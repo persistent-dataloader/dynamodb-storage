@@ -6,10 +6,14 @@ import type { DataLoaderStorage } from 'persistent-dataloader/dist/storages/stor
 
 const MAX_READ_BATCH_SIZE = 100;
 
+export interface DynamoDBStorageOptions {
+  tableName: string;
+}
+
 export default class DynamoDBStorage<V> implements DataLoaderStorage<V> {
   private dynamoDb: DocumentClient;
 
-  constructor(private tableName: string) {
+  constructor(private options: DynamoDBStorageOptions) {
     this.dynamoDb = new DocumentClient();
   }
 
@@ -17,13 +21,13 @@ export default class DynamoDBStorage<V> implements DataLoaderStorage<V> {
     const batch = splitEvery(MAX_READ_BATCH_SIZE);
 
     const results = await Bluebird.map(batch(keys), (batchToGet) => this.dynamoDb.batchGet({
-      RequestItems: { [this.tableName]: { Keys: batchToGet.map(key => ({ key })) } }
+      RequestItems: { [this.options.tableName]: { Keys: batchToGet.map(key => ({ key })) } }
     }).promise());
 
     const entities = [];
 
     for (const { Responses } of results) {
-      for (const res of Responses[this.tableName]) {
+      for (const res of Responses[this.options.tableName]) {
         entities.push(res);
       }
     }
@@ -33,7 +37,7 @@ export default class DynamoDBStorage<V> implements DataLoaderStorage<V> {
 
   async set(key: string, value: V) {
     await new DocumentClient().put({
-      TableName: this.tableName,
+      TableName: this.options.tableName,
       Item: { key, value },
     }).promise();
 
@@ -42,7 +46,7 @@ export default class DynamoDBStorage<V> implements DataLoaderStorage<V> {
 
   async delete(key: string) {
     await new DocumentClient().delete({
-      TableName: this.tableName,
+      TableName: this.options.tableName,
       Key: { key },
     }).promise();
   }
