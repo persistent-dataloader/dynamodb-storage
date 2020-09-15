@@ -2,7 +2,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import Bluebird from 'bluebird';
 import { splitEvery } from 'ramda';
 
-import type { DataLoaderStorage } from 'persistent-dataloader/dist/storages/storage-abstraction';
+import type { DataLoaderStorage } from 'persistent-dataloader';
 
 const MAX_READ_BATCH_SIZE = 100;
 
