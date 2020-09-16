@@ -37,6 +37,7 @@ describe('DynamoDBStorage tests', () => {
     const result = await new DynamoDBStorage({ tableName: 'test' }).batchGet(['some_key']);
 
     expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith({ RequestItems: { test: { Keys: [{ key: 'some_key' }] } } }, expect.any(Function));
     expect(result).toHaveLength(1);
     expect(result).toEqual([{ key: 'some_key', value: 'some_value' }]);
 
@@ -61,6 +62,41 @@ describe('DynamoDBStorage tests', () => {
       { key: 'key_1', value: 'some_value' },
       { key: 'key_105', value: 'some_value' }
     ]));
+
+    AWSMock.restore('DynamoDB.DocumentClient');
+  });
+
+  it('Should set value by key', async () => {
+    const spy = jest.fn().mockImplementationOnce((_: DocumentClient.PutItemInput, callback?: (err: AWSError, data: DocumentClient.PutItemOutput) => void) => {
+      callback(null, {});
+    });
+    AWSMock.mock('DynamoDB.DocumentClient', 'put', spy);
+
+    const result = await new DynamoDBStorage({ tableName: 'test' }).set('some_key', 'some_value');
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith({
+      TableName: 'test',
+      Item: { key: 'some_key', value: 'some_value' },
+    }, expect.any(Function));
+    expect(result).toEqual('some_value');
+
+    AWSMock.restore('DynamoDB.DocumentClient');
+  });
+
+  it('Should delete value by key', async () => {
+    const spy = jest.fn().mockImplementationOnce((_: DocumentClient.DeleteItemInput, callback?: (err: AWSError, data: DocumentClient.DeleteItemOutput) => void) => {
+      callback(null, {});
+    });
+    AWSMock.mock('DynamoDB.DocumentClient', 'delete', spy);
+
+    await new DynamoDBStorage({ tableName: 'test' }).delete('some_key');
+
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledWith({
+      TableName: 'test',
+      Key: { key: 'some_key' },
+    }, expect.any(Function));
 
     AWSMock.restore('DynamoDB.DocumentClient');
   });
